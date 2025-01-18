@@ -1,6 +1,7 @@
 "use client"
 import { Button } from '@/components/ui/button'
 import { useUser } from '@clerk/nextjs'
+import Link from 'next/link'
 import React from 'react'
 
 const Addcourse = () => {
@@ -12,9 +13,11 @@ const Addcourse = () => {
          <span className='font-bold'>{user?.fullName}</span></h2>
          <p className='sm text-gray-500'>Create new course with AI , Share with friends and Earn form it</p>
       </div>
-      <Button>
-        + Create AI courses
-      </Button>
+      <Link href={'/create-course'}>
+        <Button>
+          + Create AI courses
+        </Button>
+      </Link>
     </div>
   )
 }
