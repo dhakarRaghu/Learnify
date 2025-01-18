@@ -6,6 +6,7 @@ import SelectCategory from "./_components/SelectCategory";
 import TopicDescription from "./_components/TopicDescription";
 import SelectOption from "./_components/SelectOption";
 import { UserInputContext } from "../_context/UserInputcontext";
+import { GenerateCourseLayout } from "@/configs/AiModel";
 
 const CreateCourse = () => {
   const StepperOption = [
@@ -28,6 +29,8 @@ const CreateCourse = () => {
       content: "Configure your course options, such as pricing and publication settings.",
     },
   ];
+
+  const [loading , setloading] = useState(false);
 
   const { userCourseInput,setUserCourseInput } = useContext(UserInputContext);
 
@@ -53,6 +56,27 @@ const CreateCourse = () => {
       return true;
     }return false;
   }
+
+  const GenerateCourseLayout_result = async() => {
+
+    console.log("API Key safafa:", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    setloading(true);
+    const BASIC_PROMPT = "Generate A Course Tutorial on the following details with fields: Course Name, Description, Chapter Name, About, and Duration.";
+    const USER_INPUT_PROMPT = `
+      Category: '${userCourseInput?.category || "Not Provided"}',
+      Topic: '${userCourseInput?.topic || "Not Provided"}',
+      Level: '${userCourseInput?.Difficultylevel || "Not Provided"}',
+      Duration: '${userCourseInput?.duration || "Not Provided"}'
+      NunberOfChapter: '${userCourseInput?.numberOfChapters || "Not Provided"}'
+    `;
+    const FINAL_PROMPT = `${BASIC_PROMPT} ${USER_INPUT_PROMPT} in JSON format`;
+    console.log(FINAL_PROMPT);
+    const result = await GenerateCourseLayout(FINAL_PROMPT);
+    console.log("Result:", result);
+    // console.log(JSON.parse(result.response.text()));
+    setloading(false);
+  };
+  
 
 
   return (
@@ -123,6 +147,9 @@ const CreateCourse = () => {
         <Button disabled={checkStatus()}
           onClick={() => {
             if (activeIndex === StepperOption.length - 1) {
+              console.log("Generate Course...");
+              GenerateCourseLayout_result();
+              console.log("API Key:", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
               console.log("Generating Course..."); // Add your logic here
             } else {
               setActiveIndex((prev) => prev + 1);

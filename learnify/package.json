@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.9.13",
+    "@google/generative-ai": "^0.21.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
     "@radix-ui/react-progress": "^1.1.1",
