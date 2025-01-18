@@ -1,171 +1,184 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import React, { useContext, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { HiClipboardDocumentCheck, HiLightBulb, HiMiniSquare3Stack3D } from "react-icons/hi2";
 import SelectCategory from "./_components/SelectCategory";
 import TopicDescription from "./_components/TopicDescription";
 import SelectOption from "./_components/SelectOption";
 import { UserInputContext } from "../_context/UserInputcontext";
 import { GenerateCourseLayout } from "@/configs/AiModel";
+import LoadingDialog from "./_components/LoadingDialog";
+import { db } from "@/configs/db";
+import { CourseList } from "@/configs/schema";
+import { v4 as uuidv4 } from "uuid";
+import { useUser } from "@clerk/nextjs";
 
-const CreateCourse = () => {
-  const StepperOption = [
-    {
-      id: 1,
-      name: "Category",
-      icon: <HiMiniSquare3Stack3D className="text-5xl" />,
-      content: "Choose a category for your course. This will help students find it easily.",
-    },
-    {
-      id: 2,
-      name: "Topic & Description",
-      icon: <HiLightBulb className="text-5xl" />,
-      content: "Provide a title and description for your course. Make it engaging and detailed.",
-    },
-    {
-      id: 3,
-      name: "Options",
-      icon: <HiClipboardDocumentCheck className="text-5xl" />,
-      content: "Configure your course options, such as pricing and publication settings.",
-    },
-  ];
+const stepperOptions = [
+  {
+    id: 1,
+    name: "Category",
+    icon: <HiMiniSquare3Stack3D className="text-4xl md:text-5xl" />,
+    content: "Choose a category for your course. This will help students find it easily.",
+  },
+  {
+    id: 2,
+    name: "Topic & Description",
+    icon: <HiLightBulb className="text-4xl md:text-5xl" />,
+    content: "Provide a title and description for your course. Make it engaging and detailed.",
+  },
+  {
+    id: 3,
+    name: "Options",
+    icon: <HiClipboardDocumentCheck className="text-4xl md:text-5xl" />,
+    content: "Configure your course options, such as pricing and publication settings.",
+  },
+];
 
-  const [loading , setloading] = useState(false);
-
-  const { userCourseInput,setUserCourseInput } = useContext(UserInputContext);
-
+const CreateCourse: React.FC = () => {
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+  const { userCourseInput, setUserCourseInput } = useContext(UserInputContext);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     console.log("User Course Input:", userCourseInput);
   }, [userCourseInput]);
 
-  const checkStatus=() =>{
-    if(userCourseInput?.length==0) return true;
-    if(activeIndex == 0 && (userCourseInput?.category?.length==0 || userCourseInput?.category ==undefined)) return true;
-    if(activeIndex == 1 && (userCourseInput?.topic?.length==0 || userCourseInput?.topic ==undefined)) return true;
+  const checkStatus = () => {
+    if (!userCourseInput) return true;
+    if (activeIndex === 0 && !userCourseInput.category) return true;
+    if (activeIndex === 1 && !userCourseInput.topic) return true;
     if (
       activeIndex === 2 &&
-      (
-        !userCourseInput?.Difficultylevel ||
-        !userCourseInput?.duration ||
-        !userCourseInput?.displayvideo ||
-        userCourseInput?.numberOfChapters == null
-      )
+      (!userCourseInput.Difficultylevel ||
+        !userCourseInput.duration ||
+        !userCourseInput.displayvideo ||
+        userCourseInput.numberOfChapters == null)
     ) {
       return true;
-    }return false;
-  }
-
-  const GenerateCourseLayout_result = async() => {
-
-    console.log("API Key safafa:", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-    setloading(true);
-    const BASIC_PROMPT = "Generate A Course Tutorial on the following details with fields: Course Name, Description, Chapter Name, About, and Duration.";
-    const USER_INPUT_PROMPT = `
-      Category: '${userCourseInput?.category || "Not Provided"}',
-      Topic: '${userCourseInput?.topic || "Not Provided"}',
-      Level: '${userCourseInput?.Difficultylevel || "Not Provided"}',
-      Duration: '${userCourseInput?.duration || "Not Provided"}'
-      NunberOfChapter: '${userCourseInput?.numberOfChapters || "Not Provided"}'
-    `;
-    const FINAL_PROMPT = `${BASIC_PROMPT} ${USER_INPUT_PROMPT} in JSON format`;
-    console.log(FINAL_PROMPT);
-    const result = await GenerateCourseLayout(FINAL_PROMPT);
-    console.log("Result:", result);
-    // console.log(JSON.parse(result.response.text()));
-    setloading(false);
+    }
+    return false;
   };
-  
 
+  const generateCourseLayout = async () => {
+    setLoading(true);
+    try {
+      const BASIC_PROMPT = "Generate A Course Tutorial on the following details with fields: Course Name, Description, Chapter Name, About, and Duration.";
+      const USER_INPUT_PROMPT = `
+        Category: '${userCourseInput?.category || "Not Provided"}',
+        Topic: '${userCourseInput?.topic || "Not Provided"}',
+        Level: '${userCourseInput?.Difficultylevel || "Not Provided"}',
+        Duration: '${userCourseInput?.duration || "Not Provided"}'
+        NumberOfChapters: '${userCourseInput?.numberOfChapters || "Not Provided"}'
+      `;
+      const FINAL_PROMPT = `${BASIC_PROMPT} ${USER_INPUT_PROMPT} in JSON format`;
+      console.log(FINAL_PROMPT);
+      const result = await GenerateCourseLayout(FINAL_PROMPT);
+      console.log("Result:", result);
+      await saveCourseLayoutInDb(result);
+    } catch (error) {
+      console.error("Error generating course layout:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveCourseLayoutInDb = async (courseLayout: any) => {
+    const id = uuidv4();
+    try {
+      const result = await db.insert(CourseList).values({
+        courseId: id,
+        name: userCourseInput?.topic || "Unknown Topic",
+        level: userCourseInput?.Difficultylevel || "Unknown Level",
+        category: userCourseInput?.category || "Unknown Category",
+        courseOutput: courseLayout,
+        createdBy: user?.primaryEmailAddress?.emailAddress || "Unknown Email",
+        userName: user?.fullName || "Unknown User",
+        userProfileImage: user?.imageUrl || "",
+      });
+      console.log("Course Layout Saved in DB:", result);
+    } catch (error) {
+      console.error("Error saving course layout:", error);
+    }
+  };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-10">
-      {/* Header */}
-      <div className="flex flex-col items-center justify-center mb-16">
-        <h1 className="text-5xl font-extrabold text-primary mb-6">Create Your Course</h1>
-        <p className="text-lg text-gray-500 text-center">
-          Follow the steps below to create an amazing course for your audience!
-        </p>
-      </div>
+    <div className="bg-background min-h-screen p-4 md:p-10">
+      <div className="max-w-4xl mx-auto">
+        <header className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-primary mb-4">Create Your Course</h1>
+          <p className="text-lg text-muted-foreground">
+            Follow the steps below to create an amazing course for your audience!
+          </p>
+        </header>
 
-      {/* Stepper Section */}
-      <div className="flex justify-center items-center mb-20">
-        {StepperOption.map((item, index) => (
-          <div key={item.id} className="flex items-center">
-            {/* Step Icon and Name */}
-            <div className="flex flex-col items-center">
-              <div
-                className={`rounded-full p-6 shadow-lg ${
-                  activeIndex === index
-                    ? "bg-blue-600 text-white"
-                    : activeIndex > index
-                    ? "bg-blue-300 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                {item.icon}
+        <nav className="flex justify-center items-center mb-12" aria-label="Course creation progress">
+          {stepperOptions.map((item, index) => (
+            <React.Fragment key={item.id}>
+              <div className="flex flex-col items-center">
+                <div
+                  className={`rounded-full p-4 md:p-6 shadow-lg transition-colors ${
+                    activeIndex === index
+                      ? "bg-primary text-primary-foreground"
+                      : activeIndex > index
+                      ? "bg-primary/60 text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                  aria-current={activeIndex === index ? "step" : undefined}
+                >
+                  {item.icon}
+                </div>
+                <h2 className="sr-only md:not-sr-only md:text-sm font-medium mt-2 text-foreground">{item.name}</h2>
               </div>
-              <h2 className="hidden md:block md:text-lg font-medium mt-4 text-gray-800">{item.name}</h2>
-            </div>
-            {/* Connector Line */}
-            {index < StepperOption.length - 1 && (
-              <div
-                className={`w-20 h-1 mx-4 md:w-28 ${
-                  activeIndex > index ? "bg-blue-600" : "bg-gray-300"
-                }`}
-              ></div>
-            )}
-          </div>
-        ))}
-      </div>
+              {index < stepperOptions.length - 1 && (
+                <div
+                  className={`w-16 h-1 mx-2 md:w-24 md:mx-4 transition-colors ${
+                    activeIndex > index ? "bg-primary" : "bg-muted"
+                  }`}
+                  aria-hidden="true"
+                ></div>
+              )}
+            </React.Fragment>
+          ))}
+        </nav>
 
-      {/* Dynamic Content Section */}
-      <div >
-        {activeIndex==0 ? <SelectCategory /> :
-         activeIndex==1 ?<TopicDescription/>:
-         activeIndex==2 ?<SelectOption/>: null
-       }
-      </div>
+        <section className="mb-12">
+          {activeIndex === 0 && <SelectCategory />}
+          {activeIndex === 1 && <TopicDescription />}
+          {activeIndex === 2 && <SelectOption />}
+        </section>
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between items-center max-w-4xl mx-auto mt-16">
-        {/* Previous Button */}
-        <Button
-          disabled={activeIndex === 0}
-          onClick={() => setActiveIndex((prev) => Math.max(0, prev - 1))}
-          className={`px-8 py-3 text-lg rounded-lg transition ${
-            activeIndex === 0
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-          }`}
-        >
-          Previous
-        </Button>
+        <div className="flex justify-between items-center">
+          <Button
+            onClick={() => setActiveIndex((prev) => Math.max(0, prev - 1))}
+            disabled={activeIndex === 0}
+            variant="outline"
+            className="px-6 py-2 text-base"
+          >
+            Previous
+          </Button>
 
-        {/* Next or Generate Course Button */}
-        <Button disabled={checkStatus()}
-          onClick={() => {
-            if (activeIndex === StepperOption.length - 1) {
-              console.log("Generate Course...");
-              GenerateCourseLayout_result();
-              console.log("API Key:", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-              console.log("Generating Course..."); // Add your logic here
-            } else {
-              setActiveIndex((prev) => prev + 1);
-            }
-          }}
-          className={`px-8 py-3 text-lg rounded-lg transition ${
-            activeIndex === StepperOption.length - 1
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-          }`}
-        >
-          {activeIndex === StepperOption.length - 1 ? "Generate Course" : "Next"}
-        </Button>
+          <Button
+            onClick={() => {
+              if (activeIndex === stepperOptions.length - 1) {
+                generateCourseLayout();
+              } else {
+                setActiveIndex((prev) => prev + 1);
+              }
+            }}
+            disabled={checkStatus()}
+            variant="default"
+            className="px-6 py-2 text-base"
+          >
+            {activeIndex === stepperOptions.length - 1 ? "Generate Course" : "Next"}
+          </Button>
+        </div>
       </div>
+      <LoadingDialog loading={loading} />
     </div>
   );
 };
 
 export default CreateCourse;
+

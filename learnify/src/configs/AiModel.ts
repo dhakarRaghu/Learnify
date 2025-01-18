@@ -19,7 +19,6 @@ import {GoogleGenerativeAI} from '@google/generative-ai';
   
 
  export const GenerateCourseLayout = async (prompt : string) => {
-  const summaries: string[] = [];
   try {
     const response = await model.generateContent(prompt);
     const summary = response.response.text();
