@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { HiClipboardDocumentCheck, HiLightBulb, HiMiniSquare3Stack3D } from "react-icons/hi2";
 import SelectCategory from "./_components/SelectCategory";
 import TopicDescription from "./_components/TopicDescription";
 import SelectOption from "./_components/SelectOption";
+import { UserInputContext } from "../_context/UserInputcontext";
 
 const CreateCourse = () => {
   const StepperOption = [
@@ -28,7 +29,31 @@ const CreateCourse = () => {
     },
   ];
 
+  const { userCourseInput,setUserCourseInput } = useContext(UserInputContext);
+
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    console.log("User Course Input:", userCourseInput);
+  }, [userCourseInput]);
+
+  const checkStatus=() =>{
+    if(userCourseInput?.length==0) return true;
+    if(activeIndex == 0 && (userCourseInput?.category?.length==0 || userCourseInput?.category ==undefined)) return true;
+    if(activeIndex == 1 && (userCourseInput?.topic?.length==0 || userCourseInput?.topic ==undefined)) return true;
+    if (
+      activeIndex === 2 &&
+      (
+        !userCourseInput?.Difficultylevel ||
+        !userCourseInput?.duration ||
+        !userCourseInput?.displayvideo ||
+        userCourseInput?.numberOfChapters == null
+      )
+    ) {
+      return true;
+    }return false;
+  }
+
 
   return (
     <div className="bg-gray-50 min-h-screen p-10">
@@ -95,7 +120,7 @@ const CreateCourse = () => {
         </Button>
 
         {/* Next or Generate Course Button */}
-        <Button
+        <Button disabled={checkStatus()}
           onClick={() => {
             if (activeIndex === StepperOption.length - 1) {
               console.log("Generating Course..."); // Add your logic here

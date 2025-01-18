@@ -1,7 +1,25 @@
+import { UserInputContext } from "@/app/_context/UserInputcontext";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Value } from "@radix-ui/react-select";
+import { useContext } from "react";
 
 function SelectOption() {
+     const {userCourseInput , setUserCourseInput} = useContext(UserInputContext);
+    
+      const handleTopicChange = (fieldName, value) => {
+        setUserCourseInput((prev: any) => ({
+          ...prev,
+          [fieldName]: value,
+        }));
+      }
+
+    function handleInputChange(fieldName: string, value: string): void {
+        setUserCourseInput((prev: any) => ({
+          ...prev,
+          [fieldName]: value,
+        }));
+    }
   return (
     <div className="px-10 md:px-20 lg:px-44 py-10 bg-gray-50 rounded-lg shadow-lg">
       {/* Header */}
@@ -16,7 +34,8 @@ function SelectOption() {
             <label className="text-sm font-medium text-gray-700 mb-2 block">
               🔥 Difficulty Level
             </label>
-            <Select>
+            <Select onValueChange={(value) => handleInputChange('Difficultylevel', value)}
+                defaultValue={userCourseInput?.Difficultylevel}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Level" />
               </SelectTrigger>
@@ -33,7 +52,8 @@ function SelectOption() {
             <label className="text-sm font-medium text-gray-700 mb-2 block">
               ⏰ Course Duration
             </label>
-            <Select>
+            <Select onValueChange={(value) => handleInputChange('duration', value)}
+                defaultValue={userCourseInput?.duration}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Duration" />
               </SelectTrigger>
@@ -53,7 +73,8 @@ function SelectOption() {
             <label className="text-sm font-medium text-gray-700 mb-2 block">
               🎥 Add Video
             </label>
-            <Select>
+            <Select onValueChange={(value) => handleInputChange('displayvideo', value)}
+                defaultValue={userCourseInput?.displayvideo}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Option" />
               </SelectTrigger>
@@ -73,6 +94,8 @@ function SelectOption() {
               type="number"
               className="w-full"
               placeholder="Enter number of chapters"
+              onChange={(event) => handleInputChange('numberOfChapters', event.target.value)}
+              defaultValue={userCourseInput?.numberOfChapters}
             />
           </div>
         </div>

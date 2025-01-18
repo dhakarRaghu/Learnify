@@ -1,47 +1,41 @@
-import React from "react";
-import { CategoriesList } from "../_shared/CategoryList";
-import Image from "next/image";
+    import React, { useContext } from "react";
+    import { UserInputContext } from "@/app/_context/UserInputcontext";
+    import { CategoriesList } from "../_shared/CategoryList";
+    import Image from "next/image";
 
-const SelectCategory = () => {
-  return (
-    <div className="bg-gray-100 min-h-screen py-10">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-        {/* Title Section */}
-        <h2 className="text-3xl font-bold text-gray-800 text-center mb-10">
-          Choose a Category 📚
-        </h2>
+    interface SelectCategoryProps {}
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
-          {CategoriesList.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center p-8 border border-gray-300 rounded-xl shadow-lg hover:border-primary hover:bg-blue-50 cursor-pointer transition-all duration-300 ease-in-out transform hover:scale-105"
-            >
-              {/* Category Icon */}
-              <div className="mb-4">
-                <Image
-                  src={item.icon}
-                  alt={item.name}
-                  width={70}
-                  height={70}
-                  className="object-contain"
-                />
+    const SelectCategory: React.FC<SelectCategoryProps> = () => {
+      const { userCourseInput, setUserCourseInput } = useContext<UserInputContextType>(UserInputContext);
+
+      const handleCategoryChange = (category: string) => {
+        setUserCourseInput((prev: any) => ({
+          ...prev,
+          category,
+        }));
+      };
+
+      return (
+        <div className="px-10">
+          <h2 className="text-xl font-bold mb-5">Select the Course Category</h2>
+          <div className="grid grid-cols-2 gap-6">
+            {CategoriesList.map((item: Category, index: number) => (
+              <div
+                key={index}
+                onClick={() => handleCategoryChange(item.name)}
+                className={`border p-4 rounded-lg ${
+                  userCourseInput?.category === item.name
+                    ? "bg-blue-50 border-blue-500"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <Image src={item.icon} alt={item.name} width={50} height={50} />
+                <h3 className="mt-2">{item.name}</h3>
               </div>
-              
-              {/* Category Name */}
-              <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-
-              {/* Hover Effect - Border and Background Change */}
-              <div className="mt-4 w-full text-center text-blue-500 font-medium hidden group-hover:block">
-                <span>Explore</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
-  );
-};
+      );
+    };
 
 export default SelectCategory;
