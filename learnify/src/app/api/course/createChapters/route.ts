@@ -78,18 +78,18 @@ export async function POST(req: Request, res: Response) {
                     }),
                   });
                 }
-                await prisma.user.update({
-                    where: {
-                        id: session.user.id,
-                      },
-                      data: {
-                          credits: {
-                              decrement: 1,
-                            },
-                          },
-                        });
+                // await prisma.user.update({
+                //     where: {
+                //         id: session.user.id,
+                //       },
+                //       data: {
+                //           credits: {
+                //               decrement: 1,
+                //             },
+                //           },
+                //         });
                         
-                 return NextResponse.json({ course_id: course.id });
+              return NextResponse.json({ course_id: course.id });
           //console.log(output_units , imageSearchTerm);
         //return NextResponse.json({ output_units , imageSearchTerm , course_image });
   } catch (error) {
