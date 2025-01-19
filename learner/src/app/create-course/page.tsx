@@ -13,6 +13,7 @@ import { db } from "@/configs/db";
 import { CourseList } from "@/configs/schema";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const stepperOptions = [
   {
@@ -40,6 +41,7 @@ const CreateCourse: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { userCourseInput, setUserCourseInput } = useContext(UserInputContext);
   const [activeIndex, setActiveIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     console.log("User Course Input:", userCourseInput);
@@ -72,10 +74,10 @@ const CreateCourse: React.FC = () => {
         Duration: '${userCourseInput?.duration || "Not Provided"}'
         NumberOfChapters: '${userCourseInput?.numberOfChapters || "Not Provided"}'
       `;
-      const FINAL_PROMPT = `${BASIC_PROMPT} ${USER_INPUT_PROMPT} in JSON format`;
+      const FINAL_PROMPT = `${BASIC_PROMPT} ${USER_INPUT_PROMPT}`;
       console.log(FINAL_PROMPT);
       const result = await GenerateCourseLayout(FINAL_PROMPT);
-      console.log("Result:", result);
+      console.log("Resultbbbb:", result);
       await saveCourseLayoutInDb(result);
     } catch (error) {
       console.error("Error generating course layout:", error);
@@ -84,10 +86,10 @@ const CreateCourse: React.FC = () => {
     }
   };
 
-  const saveCourseLayoutInDb = async (courseLayout: any) => {
+  const saveCourseLayoutInDb = async (courseLayout: any, userCourseInput: any, user: any) => {
     const id = uuidv4();
     try {
-      const result = await db.insert(CourseList).values({
+      await db.insert(CourseList).values({
         courseId: id,
         name: userCourseInput?.topic || "Unknown Topic",
         level: userCourseInput?.Difficultylevel || "Unknown Level",
@@ -97,7 +99,8 @@ const CreateCourse: React.FC = () => {
         userName: user?.fullName || "Unknown User",
         userProfileImage: user?.imageUrl || "",
       });
-      console.log("Course Layout Saved in DB:", result);
+      const router = useRouter();
+      router.push('/create-course/' + id);
     } catch (error) {
       console.error("Error saving course layout:", error);
     }
