@@ -12,10 +12,9 @@ import { Plus, Trash } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-// import SubscriptionAction from "./SubscriptionAction";
+import { useRouter } from "next/navigation";
+import SubscriptionAction from "./SubscriptionAction";
 
 type Props = { isPro: boolean };
 
@@ -42,7 +41,7 @@ const CreateCourseForm = ({ isPro }: Props) => {
   });
 
   function onSubmit(data: Input) {
-    if (data.units.some((unit) => unit === '')) {
+    if (data.units.some((unit) => unit === "")) {
       toast({
         title: "Error",
         description: "Please fill all the units",
@@ -70,7 +69,6 @@ const CreateCourseForm = ({ isPro }: Props) => {
   }
 
   form.watch();
-  console.log(form.watch());
 
   return (
     <div className="w-full">
@@ -171,7 +169,7 @@ const CreateCourseForm = ({ isPro }: Props) => {
           </Button>
         </form>
       </Form>
-      {/* {!isPro && <SubscriptionAction />} */}
+      {!isPro && <SubscriptionAction />}
     </div>
   );
 };

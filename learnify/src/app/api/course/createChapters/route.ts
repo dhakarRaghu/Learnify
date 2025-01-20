@@ -12,9 +12,9 @@ import { getAuthSession } from "@/lib/auth";
 export async function POST(req: Request, res: Response) {
   try {
     const session = await getAuthSession();
-    // if (!session?.user) {
-    //   return new NextResponse("unauthorised", { status: 401 });
-    // }
+    if (!session?.user) {
+      return new NextResponse("unauthorised", { status: 401 });
+    }
     // const isPro = await checkSubscription();
     // if (session.user.credits <= 0 && !isPro) {
     //   return new NextResponse("no credits", { status: 402 });
@@ -49,7 +49,7 @@ export async function POST(req: Request, res: Response) {
         image_search_term: "a good search term for the title of the course",
       }
     );
-    
+
     const course_image = await getUnsplashImage(
       imageSearchTerm.image_search_term
     );
@@ -59,39 +59,38 @@ export async function POST(req: Request, res: Response) {
         image: course_image,
       },
     });
-    
+
     for (const unit of output_units) {
-        const title = unit.title;
-        const prismaUnit = await prisma.unit.create({
-            data: {
-                name: title,
-                courseId: course.id,
-              },
-            });
-            await prisma.chapter.createMany({
-                data: unit.chapters.map((chapter) => {
-                    return {
-                        name: chapter.chapter_title,
-                        youtubeSearchQuery: chapter.youtube_search_query,
-                        unitId: prismaUnit.id,
-                      };
-                    }),
-                  });
-                }
-                // await prisma.user.update({
-                //     where: {
-                //         id: session.user.id,
-                //       },
-                //       data: {
-                //           credits: {
-                //               decrement: 1,
-                //             },
-                //           },
-                //         });
-                        
-              return NextResponse.json({ course_id: course.id });
-          //console.log(output_units , imageSearchTerm);
-        //return NextResponse.json({ output_units , imageSearchTerm , course_image });
+      const title = unit.title;
+      const prismaUnit = await prisma.unit.create({
+        data: {
+          name: title,
+          courseId: course.id,
+        },
+      });
+      await prisma.chapter.createMany({
+        data: unit.chapters.map((chapter) => {
+          return {
+            name: chapter.chapter_title,
+            youtubeSearchQuery: chapter.youtube_search_query,
+            unitId: prismaUnit.id,
+          };
+        }),
+      });
+    }
+    await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        credits: {
+          decrement: 1,
+        },
+      },
+    });
+    //console.log(output_units , imageSearchTerm);
+    //return NextResponse.json({ output_units , imageSearchTerm , course_image });
+    return NextResponse.json({ course_id: course.id });
   } catch (error) {
     if (error instanceof ZodError) {
       return new NextResponse("invalid body", { status: 400 });
