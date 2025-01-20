@@ -12,10 +12,10 @@ type Props = {
 };
 
 const CreateChapters = async ({ params: { courseId } }: Props) => {
-  const session = await getAuthSession();
-  if (!session?.user) {
-    return redirect("/gallery");
-  }
+  // const session = await getAuthSession();
+  // if (!session?.user) {
+  //   return redirect("/gallery");
+  // }
   const course = await prisma.course.findUnique({
     where: {
       id: courseId,
