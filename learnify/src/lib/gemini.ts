@@ -6,7 +6,6 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 interface OutputFormat {
   [key: string]: string | string[] | OutputFormat;
 }
@@ -17,7 +16,7 @@ interface OutputFormat {
  * @param user_prompt - The user-provided input prompt or an array of prompts.
  * @param output_format - The desired output format as a JSON structure.
  * @param default_category - Default value for unrecognized output fields (optional).
- * @param output_value_only - If true, extracts only the values of the output JSON.
+ * @param output_value_only - If true, extracts only the values of the output JSON.øø
  * @param modelName - The name of the model to use.
  * @param temperature - The temperature for model responses (controls randomness).
  * @param num_tries - Number of retry attempts in case of errors.

@@ -1,6 +1,7 @@
 import CourseSideBar from "@/components/CourseSideBar";
 import MainVideoSummary from "@/components/MainVideoSummary";
 import QuizCards from "@/components/QuizCards";
+import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -14,6 +15,10 @@ type Props = {
 };
 
 const CoursePage = async ({ params: { slug } }: Props) => {
+    const session = await getAuthSession();
+    if (!session?.user) {
+      return redirect("/gallery");
+    }
   const [courseId, unitIndexParam, chapterIndexParam] = slug;
   const course = await prisma.course.findUnique({
     where: { id: courseId },
