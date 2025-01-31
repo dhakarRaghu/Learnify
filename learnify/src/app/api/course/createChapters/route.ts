@@ -9,7 +9,7 @@ import { prisma } from "@/lib/db";
 import { getAuthSession } from "@/lib/auth";
 // import { checkSubscription } from "@/lib/subscription";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     const session = await getAuthSession();
     if (!session?.user) {

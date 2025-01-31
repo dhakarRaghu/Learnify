@@ -14,7 +14,7 @@ const bodyParser = z.object({
   chapterId: z.string(),
 });
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request)  {
   try {
     const body = await req.json();
     const { chapterId } = bodyParser.parse(body);
