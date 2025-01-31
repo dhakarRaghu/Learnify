@@ -15,6 +15,7 @@ type Props = {
 };
 
 const CoursePage = async ({ params: { slug } }: Props) => {
+  console.log("slugg", slug);
     const session = await getAuthSession();
     if (!session?.user) {
       return redirect("/gallery");
