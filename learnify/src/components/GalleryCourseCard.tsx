@@ -1,7 +1,9 @@
 
+import { getAuthSession } from "@/lib/auth";
 import { Chapter, Course, Unit } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {

@@ -55,44 +55,7 @@ const testimonials = [
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center sticky top-0 z-50 backdrop-blur-lg bg-white/75 dark:bg-gray-900/75 border-b border-gray-200 dark:border-gray-800">
-        <Link className="flex items-center justify-center" href="#">
-          <Brain className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-          <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-gray-100 font-display">Learnigfy</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-            href="#"
-          >
-            Features
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-            href="#"
-          >
-            Pricing
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-            href="#"
-          >
-            About
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-            href="#"
-          >
-            Contact
-          </Link>
-        </nav>
-        <div className="ml-4 flex items-center gap-4">
-          <ThemeToggle />
-          <Button asChild>
-            <Link href="/sign-in">Sign In</Link>
-          </Button>
-        </div>
-      </header>
+     
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 relative overflow-hidden">
           <div className="container px-4 md:px-6 relative z-10">
@@ -107,22 +70,20 @@ export default function HomePage() {
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <form className="relative group">
-                  <Input
-                    className="w-full pl-4 pr-20 py-3 rounded-full border-2 border-purple-300 focus:border-purple-500 dark:border-purple-700 dark:focus:border-purple-500 transition-all duration-300 ease-in-out shadow-lg focus:shadow-purple-300/50 dark:focus:shadow-purple-700/50"
-                    placeholder="Enter your email"
-                    type="email"
-                  />
-                  <Button
+
+                <Link href="/gallery">
+                  <Button 
                     className="absolute right-1 top-1 rounded-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold transition-all duration-300 ease-in-out transform group-hover:scale-105"
                     type="submit"
                   >
                     Get Started
                     <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </form>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Start your learning journey today. No credit card required.
+                  Start your learning journey today and Now.
                 </p>
+                  </Button>
+                </Link>
+                </form>
               </div>
             </div>
           </div>
@@ -199,18 +160,15 @@ export default function HomePage() {
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <form className="relative group">
-                  <Input
-                    className="w-full pl-4 pr-20 py-3 rounded-full border-2 border-purple-300 focus:border-purple-100 transition-all duration-300 ease-in-out shadow-lg focus:shadow-purple-300/50 bg-white text-gray-900"
-                    placeholder="Enter your email"
-                    type="email"
-                  />
+                  <Link href={"/gallery"}>
                   <Button
-                    className="absolute right-1 top-1 rounded-full px-4 py-2 bg-purple-800 text-white font-semibold transition-all duration-300 ease-in-out transform group-hover:scale-105 hover:bg-purple-700"
+                    className="absolute my-2 left-20 rounded-full px-2 py-4 bg-purple-800 text-white font-semibold transition-all duration-300 ease-in-out transform group-hover:scale-105 hover:bg-purple-700"
                     type="submit"
                   >
                     Start Learning
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
+                  </Link>
                 </form>
               </div>
             </div>
