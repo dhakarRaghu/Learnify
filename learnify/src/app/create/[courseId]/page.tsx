@@ -5,13 +5,12 @@ import { Info } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
 
-type Props = {
-  params: {
-    courseId: string;
-  };
-};
+interface Props {
+  params: Promise<{  courseId: string}>;
+}
 
-const CreateChapters = async ({ params: { courseId } }: Props) => {
+const CreateChapters = async (props : Props) => {
+  const { courseId } = await props.params;
   // const session = await getAuthSession();
   // if (!session?.user) {
   //   return redirect("/gallery");

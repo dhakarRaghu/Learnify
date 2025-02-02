@@ -72,7 +72,7 @@ export async function strict_output(
 
         const fullPrompt = `${system_prompt}${output_format_prompt}${error_msg}\n\n${user_prompt.toString()}`;
 
-        const result = await model.generateContent(fullPrompt, generationConfig);
+        const result = await model.generateContent(fullPrompt);
         const response = await result.response;
 
         if (!response.text()) {
@@ -92,7 +92,11 @@ export async function strict_output(
         try {
           output = JSON.parse(res);
         } catch (parseError) {
-          throw new Error(`Failed to parse JSON response: ${parseError.message}\nResponse: ${res}`);
+          if (parseError instanceof Error) {
+            throw new Error(`Failed to parse JSON response: ${parseError.message}\nResponse: ${res}`);
+          } else {
+            throw new Error(`Failed to parse JSON response: ${res}`);
+          }
         }
 
         if (list_input && !Array.isArray(output)) {
