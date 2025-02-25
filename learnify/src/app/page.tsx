@@ -34,20 +34,20 @@ const testimonials = [
     name: "Sarah L.",
     role: "High School Student",
     content:
-      "Learnigfy has completely transformed my study habits. The AI tutor feels like it truly understands my needs!",
+      "Learnify has completely transformed my study habits. The AI tutor feels like it truly understands my needs!",
     avatar: "/placeholder.svg?height=100&width=100",
   },
   {
     name: "Michael R.",
     role: "Adult Learner",
     content:
-      "As a busy professional, Learnigfy's flexibility is a game-changer. I can learn at my own pace, anytime, anywhere.",
+      "As a busy professional, Learnify's flexibility is a game-changer. I can learn at my own pace, anytime, anywhere.",
     avatar: "/placeholder.svg?height=100&width=100",
   },
   {
     name: "Dr. Emily T.",
     role: "Education Researcher",
-    content: "The adaptive learning algorithms in Learnigfy are truly impressive. It's the future of education.",
+    content: "The adaptive learning algorithms in Learnify are truly impressive. It's the future of education.",
     avatar: "/placeholder.svg?height=100&width=100",
   },
 ]
@@ -95,7 +95,7 @@ export default function HomePage() {
         <section className="w-full py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-800">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 font-display">
-              Why Choose Learnigfy?
+              Why Choose Learnify?
             </h2>
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
               {features.map((feature, index) => (
@@ -176,7 +176,7 @@ export default function HomePage() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-white dark:bg-gray-800">
-        <p className="text-xs text-gray-500 dark:text-gray-400">© 2023 Learnigfy. All rights reserved.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">© 2025 Learnify. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link className="text-xs hover:underline underline-offset-4 text-gray-500 dark:text-gray-400" href="#">
             Terms of Service
