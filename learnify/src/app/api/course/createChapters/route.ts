@@ -57,6 +57,11 @@ export async function POST(req: Request) {
       data: {
         name: title,
         image: course_image,
+        user: {
+          connect: {
+            id: session.user.id,
+          },
+        },
       },
     });
 
