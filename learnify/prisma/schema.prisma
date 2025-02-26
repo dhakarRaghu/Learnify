@@ -7,6 +7,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  credits       Int          @default(5)
+  accounts      Account[]
+  sessions      Session[]
+  courses       Course[]
+  videoModules  VideoModule[] // Videos organized in modules
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  name      String
+  image     String
+  userId    String
+  createdAt DateTime @default(now())
+  units     Unit[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Unit {
+  id       String    @id @default(cuid())
+  courseId String
+  name     String
+  course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  chapters Chapter[]
+  @@index([courseId], name: "courseId")
+}
+
+model Chapter {
+  id                 String     @id @default(cuid())
+  unitId             String
+  name               String
+  youtubeSearchQuery String
+  videoId            String?
+  summary            String?    @db.Text
+  unit               Unit       @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  questions          Question[]
+  @@index([unitId], name: "unitId")
+}
+
+model Question {
+  id        String  @id @default(cuid())
+  chapterId String
+  question  String  @db.Text
+  answer    String  @db.Text
+  options   String  @db.Text
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  @@index([chapterId], name: "chapterId")
+}
+
+model VideoModule {
+  id        String   @id @default(cuid())
+  name      String   @default("New Module")
+  userId    String
+  createdAt DateTime @default(now())
+  videos    Video[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId], name: "videoModule_userId_index")
+}
+
+model Video {
+  id            String       @id @default(cuid())
+  name          String?
+  url           String       @unique
+  videoId       String       
+  summary       String?      @db.Text
+  moduleId      String?
+  createdAt     DateTime     @default(now())
+  videoModule   VideoModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  @@index([moduleId], name: "video_moduleId_index")
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -21,9 +97,8 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
-  @@index([userId], name: "account_userId_index") // Unique name for the index
+  @@index([userId], name: "account_userId_index")
 }
 
 model Session {
@@ -32,63 +107,5 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId], name: "session_userId_index") // Unique name for the index
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  credits       Int       @default(5)
-
-  accounts Account[]
-  sessions Session[]
-}
-
-model Course {
-  id    String @id @default(cuid())
-  name  String
-  image String
-  units Unit[]
-}
-
-// unit contains many chapters
-model Unit {
-  id       String @id @default(cuid())
-  courseId String
-
-  name     String
-  course   Course    @relation(fields: [courseId], references: [id])
-  chapters Chapter[]
-
-  @@index([courseId], name: "courseId")
-}
-
-model Chapter {
-  id     String @id @default(cuid())
-  unitId String
-
-  name               String
-  youtubeSearchQuery String
-  videoId            String?
-  summary            String?    @db.VarChar(3000)
-  unit               Unit       @relation(fields: [unitId], references: [id])
-  questions          Question[]
-
-  @@index([unitId], name: "unitId")
-}
-
-model Question {
-  id        String @id @default(cuid())
-  chapterId String
-
-  question String  @db.VarChar(3000)
-  answer   String  @db.VarChar(3000)
-  options  String  @db.VarChar(3000)
-  chapter  Chapter @relation(fields: [chapterId], references: [id])
-
-  @@index([chapterId], name: "chapterId")
+  @@index([userId], name: "session_userId_index")
 }
