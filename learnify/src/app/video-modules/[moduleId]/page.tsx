@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
@@ -10,6 +10,7 @@ import VideoDropdown from "./VideoDropdown";
 import { getAuthSession } from "@/lib/auth";
 import UserAccountNav from "@/components/UserAccountNav";
 import SignInButton from "@/components/SignInButton";
+import { deleteModule, deleteVideo } from "@/lib/videoAction";
 
 const prisma = new PrismaClient();
 
@@ -20,9 +21,12 @@ interface Props {
 
 export default async function VideoModulePage({ params, searchParams }: Props) {
   const session = await getAuthSession();
+  if (!session) {
+    redirect("/login");
+  }
   const { moduleId } = await params;
   const { videoIndex: videoIndexParam } = await searchParams;
-  const userId = "cm7ltbgxy000075zz07dd8nm5"; // Replace with auth
+  const userId = session.user.id;
 
   const modules = await prisma.videoModule.findMany({
     where: { userId },
@@ -90,15 +94,33 @@ export default async function VideoModulePage({ params, searchParams }: Props) {
         <header className="border-b px-4 py-3 flex items-center gap-3">
           <h1 className="text-lg font-semibold truncate">{currentModule.name}</h1>
           <VideoDropdown
-            videos={currentModule.videos}
+            videos={currentModule.videos.map(video => ({
+              ...video,
+              name: video.name || "Untitled Video",
+              summary: video.summary || undefined
+            }))}
             moduleId={moduleId}
             currentVideoIndex={currentVideoIndex}
           />
+          <form
+            action={async () => {
+              "use server";
+              await deleteVideo(currentVideo.id, userId, moduleId);
+            }}
+          >
+            <button
+              type="submit"
+              className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-600"
+              title="Delete Video"
+            >
+              <Trash2 className="h-5 w-5" />
+            </button>
+          </form>
         </header>
         <div className="flex-1 overflow-y-auto">
           {currentVideo ? (
             <div className="h-full flex flex-col">
-              <div className="relative w-full" style={{ paddingBottom: '39.375%' /* 16:9 adjusted */ }}>
+              <div className="relative w-full" style={{ paddingBottom: '39.375%' }}>
                 <iframe
                   width="70%"
                   height="70%"
@@ -110,7 +132,9 @@ export default async function VideoModulePage({ params, searchParams }: Props) {
                 />
               </div>
               <div className="p-4 flex-1">
-                <h2 className="mb-3 text-lg font-semibold">{currentVideo.name}</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-semibold">{currentVideo.name}</h2>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   {currentVideo.summary || "No summary available."}
                 </p>
