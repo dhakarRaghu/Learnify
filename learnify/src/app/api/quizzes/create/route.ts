@@ -77,14 +77,27 @@ export async function POST(req: NextRequest) {
       where: { videoId: video.id },
     });
 
-    await prisma.quiz.createMany({
-      data: generatedQuestions.map((q) => ({
-        videoId: video.id,
-        question: q.question,
-        answer: q.answer,
-        options: JSON.stringify(q.options),
-      })),
-    });
+    interface GeneratedQuestion {
+      question: string;
+      answer: string;
+      options: string[];
+    }
+
+    interface QuizCreationData {
+      videoId: string;
+      question: string;
+      answer: string;
+      options: string;
+    }
+
+        await prisma.quiz.createMany({
+          data: generatedQuestions.map((q: GeneratedQuestion): QuizCreationData => ({
+            videoId: video.id,
+            question: q.question,
+            answer: q.answer,
+            options: JSON.stringify(q.options),
+          })),
+        });
 
     const quizzes = await prisma.quiz.findMany({
       where: { videoId: video.id },
