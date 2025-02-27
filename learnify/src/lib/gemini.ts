@@ -1,11 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Ensure the API key is set
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GOOGLE_AI_API_KEY is not set in environment variables");
-}
+// if (!process.env.GEMINI_API_KEY) {
+//   console.error("GEMINI_API_KEY " , process.env.GEMINI_API_KEY );
+//   throw new Error("GOOGLE_AI_API_KEY is not set in environment variables");
+// }
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+console.error("GEMINI_API_KEY " , process.env.GEMINI_API_KEY as string , typeof process.env.GEMINI_API_KEY);
 interface OutputFormat {
   [key: string]: string | string[] | OutputFormat;
 }

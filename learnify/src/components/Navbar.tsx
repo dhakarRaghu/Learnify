@@ -26,6 +26,9 @@ const Navbar = async (props: Props) => {
               <Link href="/create" className="mr-3">
                 Create Course
               </Link>
+              <Link href="/video-modules" className="mr-3">
+                videos
+              </Link>
               <Link href="/settings" className="mr-3">
                 Settings
               </Link>

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
+import { deleteModule } from "@/lib/videoAction";
 
 interface Module {
   id: string;
@@ -77,27 +78,27 @@ export default function CreateVideoClient({ userId, modules }: CreateVideoClient
   });
 
   // Mutation for deleting a module
-  const { mutate: deleteModule, isPending: isDeletingPending } = useMutation({
-    mutationFn: async (moduleId: string) => {
-      const response = await axios.delete(`/api/video-modules/${moduleId}?userId=${userId}`);
-      return response.data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Module deleted successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ['modules', userId] });
-    },
-    onError: (error) => {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to delete module",
-        variant: "destructive",
-      });
-    },
-  });
+  // const { mutate: deleteModule, isPending: isDeletingPending } = useMutation({
+  //   mutationFn: async (moduleId: string) => {
+  //     const response = await axios.delete(`/api/video-modules/${moduleId}?userId=${userId}`);
+  //     return response.data;
+  //   },
+  //   onSuccess: () => {
+  //     toast({
+  //       title: "Success",
+  //       description: "Module deleted successfully",
+  //     });
+  //     queryClient.invalidateQueries({ queryKey: ['modules', userId] });
+  //   },
+  //   onError: (error) => {
+  //     console.error(error);
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to delete module",
+  //       variant: "destructive",
+  //     });
+  //   },
+  // });
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -136,7 +137,19 @@ export default function CreateVideoClient({ userId, modules }: CreateVideoClient
 
   const handleDelete = (moduleId: string) => {
     if (confirm("Are you sure you want to delete this module?")) {
-      deleteModule(moduleId);
+      try
+      {
+        deleteModule(moduleId,userId);
+      }
+      catch (error)
+      {
+        console.error(error);
+        toast({
+          title: "Error",
+          description: "Failed to delete module",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -262,7 +275,7 @@ export default function CreateVideoClient({ userId, modules }: CreateVideoClient
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(module.id)}
-                    disabled={isDeletingPending}
+                    // disabled={isDeletingPending}
                     className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-600"
                   >
                     <Trash2 className="h-5 w-5" />

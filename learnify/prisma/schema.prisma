@@ -62,25 +62,38 @@ model Question {
 }
 
 model VideoModule {
-  id        String   @id @default(cuid())
-  name      String   @default("New Module")
-  userId    String
-  createdAt DateTime @default(now())
-  videos    Video[]
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  name             String   @default("New Module")
+  userId           String
+  createdAt        DateTime @default(now())
+  videos           Video[]
+  originalModuleId String?  // New field to store the original module ID if cloned
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId], name: "videoModule_userId_index")
 }
 
 model Video {
   id            String       @id @default(cuid())
   name          String?
-  url           String       @unique
+  url           String       
   videoId       String       
   summary       String?      @db.Text
   moduleId      String?
   createdAt     DateTime     @default(now())
   videoModule   VideoModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  quizzes       Quiz[]
   @@index([moduleId], name: "video_moduleId_index")
+  @@unique([moduleId, videoId], name: "unique_module_video")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  videoId     String
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  question    String
+  answer      String   @default("") // Max 15 words enforced in code
+  options     String   // JSON stringified array of options
+  @@index([videoId])
 }
 
 model Account {
