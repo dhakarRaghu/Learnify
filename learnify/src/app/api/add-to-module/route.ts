@@ -37,7 +37,7 @@ const truncateTo300Words = (text: string) => {
 
 export async function POST(req: NextRequest) {
   const { userId, videoId, playlistId, moduleId, action, newModuleName } = await req.json();
-  console.log("userId:", userId, "videoId:", videoId, "playlistId:", playlistId, "moduleId:", moduleId, "action:", action, "newModuleName:", newModuleName);
+  // console.log("userId:", userId, "videoId:", videoId, "playlistId:", playlistId, "moduleId:", moduleId, "action:", action, "newModuleName:", newModuleName);
 
   if (!userId || !action) {
     return NextResponse.json({ error: 'userId and action required' }, { status: 400 });
@@ -116,7 +116,7 @@ if (existingVideo) {
     });
     const existingVideoIds = existingVideos.map(v => v.videoId);
 
-    console.log('Existing video IDs:', existingVideoIds);
+    // console.log('Existing video IDs:', existingVideoIds);
 
     const newVideosData = await Promise.all(
       playlistItems

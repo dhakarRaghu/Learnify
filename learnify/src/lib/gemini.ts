@@ -7,7 +7,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-console.error("GEMINI_API_KEY " , process.env.GEMINI_API_KEY as string , typeof process.env.GEMINI_API_KEY);
 interface OutputFormat {
   [key: string]: string | string[] | OutputFormat;
 }
@@ -85,9 +84,9 @@ export async function strict_output(
         let res = response.text().replace(/```json\n?|\n?```/g, "").trim();
 
         if (verbose) {
-          console.log("System prompt:", system_prompt + output_format_prompt + error_msg);
-          console.log("\nUser prompt:", user_prompt);
-          console.log("\nGemini response:", res);
+          // console.log("System prompt:", system_prompt + output_format_prompt + error_msg);
+          // console.log("\nUser prompt:", user_prompt);
+          // console.log("\nGemini response:", res);
         }
 
         let output: any;

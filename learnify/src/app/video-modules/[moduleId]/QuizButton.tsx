@@ -30,7 +30,7 @@ interface QuizButtonProps {
 }
 
 export default function QuizButton({ videoId }: QuizButtonProps) {
-  console.log("videoId", videoId);
+  // console.log("videoId", videoId);
   const [showQuiz, setShowQuiz] = useState(false);
 
   return (

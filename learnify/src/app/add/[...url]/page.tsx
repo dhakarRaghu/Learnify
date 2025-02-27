@@ -39,7 +39,7 @@ export default async function YoutubeVideo({ params, searchParams }: Props) {
   if (!videoId) return <div>Invalid YouTube URL provided.</div>;
 
   const userId = session.user.id;
-  console.log("User ID:", userId);
+  // console.log("User ID:", userId);
   const modules = await prisma.videoModule.findMany({
     where: { userId },
     select: { id: true, name: true },

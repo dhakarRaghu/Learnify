@@ -31,7 +31,7 @@ const VideoQuizCard = ({ videoId, onClose }: Props) => {
     queryKey: ['quizzes', videoId],
     queryFn: async () => {
       const response = await axios.get<{ questions: Question[] }>(`/api/quizzes?videoId=${videoId}`);
-      console.log("Fetched Quizzes:", response.data);
+      // console.log("Fetched Quizzes:", response.data);
       return response.data.questions;
     },
     staleTime: Infinity, // Keep cached indefinitely unless invalidated
@@ -43,7 +43,7 @@ const VideoQuizCard = ({ videoId, onClose }: Props) => {
       const response = await axios.post<{ questions: Question[] }>("/api/quizzes/create", {
         videoId,
       });
-      console.log("Generated Quizzes:", response.data);
+      // console.log("Generated Quizzes:", response.data);
       return response.data.questions;
     },
     onSuccess: (fetchedQuestions) => {

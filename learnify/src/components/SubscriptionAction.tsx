@@ -17,7 +17,8 @@ const SubscriptionAction = (props: Props) => {
       const response = await axios.get("/api/stripe");
       window.location.href = response.data.url;
     } catch (error) {
-      console.log("error", error);
+      throw new Error(error instanceof Error ? error.message : String(error));
+      // console.log("error", error);
     } finally {
       setLoading(false);
     }

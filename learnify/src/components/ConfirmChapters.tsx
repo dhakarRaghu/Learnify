@@ -33,7 +33,7 @@ const ConfirmChapters = ({ course }: Props) => {
       return acc + unit.chapters.length;
     }, 0);
   }, [course.units]);
-  console.log(totalChaptersCount, completedChapters.size);
+  // console.log(totalChaptersCount, completedChapters.size);
   return (
     <div className="w-full mt-4">
       {course.units.map((unit, unitIndex) => {

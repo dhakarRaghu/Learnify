@@ -6,16 +6,16 @@ import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
 export async function deleteModule(moduleId: string, userId: string) {
-  console.log('Deleting module:', moduleId , "userId : " ,userId ); ;
+  // console.log('Deleting module:', moduleId , "userId : " ,userId ); ;
 
   const module = await prisma.videoModule.findUnique({
     where: { id: moduleId },
   });
-  console.log('Module:', module?.name);
+  // console.log('Module:', module?.name);
   if (!module || module.userId !== userId) {
     throw new Error('Module not found or unauthorized');
   }
-  console.log('Deleting module:', module.name);
+  // console.log('Deleting module:', module.name);
   await prisma.videoModule.delete({
     where: { id: moduleId },
   });

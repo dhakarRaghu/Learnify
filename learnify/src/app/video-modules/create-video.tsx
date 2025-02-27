@@ -154,7 +154,7 @@ export default function CreateVideoClient({ userId, modules }: CreateVideoClient
   };
 
   const { videoId, playlistId } = getYouTubeIds(url);
-  console.log("videoId:", videoId, "playlistId:", playlistId);
+  // console.log("videoId:", videoId, "playlistId:", playlistId);
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
